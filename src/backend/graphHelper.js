@@ -49,3 +49,40 @@ async function getUserTokenAsync() {
     return response.token;
   }
   module.exports.getUserTokenAsync = getUserTokenAsync;
+
+  async function getUserAsync() {
+    // Ensure client isn't undefined
+    if (!_userClient) {
+      throw new Error('Graph has not been initialized for user auth');
+    }
+  
+    return _userClient.api('/me')
+      // Only request specific properties
+      .select(['displayName', 'mail', 'userPrincipalName'])
+      .get();
+  }
+  module.exports.getUserAsync = getUserAsync;
+
+  async function getInboxAsync() {
+    // Ensure client isn't undefined
+    if (!_userClient) {
+      throw new Error('Graph has not been initialized for user auth');
+    }
+  
+    return _userClient.api('/me/mailFolders/inbox/messages')
+      .select(['from', 'isRead', 'receivedDateTime', 'subject'])
+      .top(25)
+      .orderby('receivedDateTime DESC')
+      .get();
+  }
+  module.exports.getInboxAsync = getInboxAsync;
+
+  async function getDriveAsync() {
+    // Ensure client isn't undefined
+    if (!_userClient) {
+      throw new Error('Graph has not been initialized for user auth');
+    }
+  
+    return _userClient.api('/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets').get();
+  }
+  module.exports.getDriveAsync = getDriveAsync;

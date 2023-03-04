@@ -1,7 +1,7 @@
 const readline = require('readline-sync');
 
-const settings = require('../appSettings');
-const graphHelper = require('../graphHelper');
+const settings = require('./appSettings');
+const graphHelper = require('./graphHelper');
 
 async function main() {
   console.log('JavaScript Graph Tutorial');
@@ -17,7 +17,7 @@ async function main() {
   const choices = [
     'Display access token',
     'List my inbox',
-    'Send mail',
+    'Show drive',
     'Make a Graph call'
   ];
 
@@ -39,7 +39,7 @@ async function main() {
         break;
       case 2:
         // Send an email message
-        await sendMailAsync();
+        await displayDriveAsync();
         break;
       case 3:
         // Run any Graph code
@@ -64,7 +64,15 @@ function initializeGraph(settings) {
   }
   
   async function greetUserAsync() {
-    // TODO
+    try {
+      const user = await graphHelper.getUserAsync();
+      console.log(`Hello, ${user?.displayName}!`);
+      // For Work/school accounts, email is in mail property
+      // Personal accounts, email is in userPrincipalName
+      console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+    } catch (err) {
+      console.log(`Error getting user: ${err}`);
+    }
   }
   
   async function displayAccessTokenAsync() {
@@ -75,10 +83,39 @@ function initializeGraph(settings) {
       console.log(`Error getting user access token: ${err}`);
     }
   }
+  async function displayDriveAsync() {
+    try {
+      const userDrive = await graphHelper.getDriveAsync();
+      const drive = userDrive.value;
+      console.log(drive);
+    } catch (err) {
+      console.log(`Error getting user drive: ${err}`);
+    }
+  }
   
   async function listInboxAsync() {
-    // TODO
+    try {
+      const messagePage = await graphHelper.getInboxAsync();
+      const messages = messagePage.value;
+  
+      // Output each message's details
+      for (const message of messages) {
+        console.log(`Message: ${message.subject ?? 'NO SUBJECT'}`);
+        console.log(`  From: ${message.from?.emailAddress?.name ?? 'UNKNOWN'}`);
+        console.log(`  Status: ${message.isRead ? 'Read' : 'Unread'}`);
+        console.log(`  Received: ${message.receivedDateTime}`);
+      }
+  
+      // If @odata.nextLink is not undefined, there are more messages
+      // available on the server
+      const moreAvailable = messagePage['@odata.nextLink'] != undefined;
+      console.log(`\nMore messages available? ${moreAvailable}`);
+    } catch (err) {
+      console.log(`Error getting user's inbox: ${err}`);
+    }
   }
+
+
   
   async function sendMailAsync() {
     // TODO
