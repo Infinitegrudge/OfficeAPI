@@ -30,19 +30,23 @@ router.get('/',
 
       try {
         // Get the events
-        const files = await graph.getDriveItems(
+        const payroll = await graph.getPayroll(
           req.app.locals.msalClient,
           req.session.userId);
 
+        console.log(payroll);
+          const schedule = await graph.getSchedule(req.app.locals.msalClient,
+            req.session.userId)
+            console.log(schedule);
         // Assign the events to the view parameters
-        params.events = files.value;
+        //params.events = files.value;
       } catch (err) {
         req.flash('error_msg', {
           message: 'Could not fetch events',
           debug: JSON.stringify(err, Object.getOwnPropertyNames(err))
         });
       }
-      //console.log(params.events);
+      console.log(params.events);
       res.render('excel', params);
     }
   }

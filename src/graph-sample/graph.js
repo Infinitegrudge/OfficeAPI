@@ -14,11 +14,13 @@ module.exports = {
       .get();
     return user;
   },
-  getDriveItems: async function(msalClient, userId) {
+  getPayroll: async function(msalClient, userId) {
     const client = getAuthenticatedClient(msalClient, userId);
 
     return client
-      .api('/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets')
+
+      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B1BB9E4E1-AEC1-43F8-9CAE-A949F9B28991%7D%27)/usedRange")
+
       // Add Prefer header to get back times in user's timezone
       // .header('Prefer', `outlook.timezone="${timeZone}"`)
       // // Add the begin and end of the calendar window
@@ -33,7 +35,25 @@ module.exports = {
       // Get at most 50 results
       .get();
   },
+  getSchedule: async function(msalClient, userId) {
+    const client = getAuthenticatedClient(msalClient, userId);
 
+    return client
+      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/usedRange")
+      // Add Prefer header to get back times in user's timezone
+      // .header('Prefer', `outlook.timezone="${timeZone}"`)
+      // // Add the begin and end of the calendar window
+      // .query({
+      //   startDateTime: encodeURIComponent(start),
+      //   endDateTime: encodeURIComponent(end)
+      // })
+      // Get just the properties used by the app
+      // .select('subject,organizer,start,end')
+      // Order by start time
+      // .orderby('start/dateTime')
+      // Get at most 50 results
+      .get();
+  },
   getDrive: async function(msalClient, userId) {
     const client = getAuthenticatedClient(msalClient, userId);
 
