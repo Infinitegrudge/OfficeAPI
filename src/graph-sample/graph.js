@@ -18,7 +18,7 @@ module.exports = {
     const client = getAuthenticatedClient(msalClient, userId);
 
     return client
-      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets")
+      .api('/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets')
       // Add Prefer header to get back times in user's timezone
       // .header('Prefer', `outlook.timezone="${timeZone}"`)
       // // Add the begin and end of the calendar window
@@ -75,6 +75,7 @@ module.exports = {
       .top(50)
       .get();
   },
+
   // </GetCalendarViewSnippet>
   // <CreateEventSnippet>
   createEvent: async function(msalClient, userId, formData, timeZone) {
@@ -115,10 +116,36 @@ module.exports = {
       .api('/me/events')
       .post(newEvent);
   },
+  sendMail: async function(msalClient,userId,emailMessage){
+    //Data structure
+    //emailMessage:{subject:string,body:{contentType:string,content:string},address:string}
+    
+    const client = getAuthenticatedClient(msalClient, userId);
+
+    return client.api('/me/sendMail').post({message:{
+      subject:emailMessage.subject,
+      body:{
+        contentType: emailMessage.body.contentType,
+        content: emailMessage.body.content,
+
+      },
+      toRecipients: [
+        {
+          emailAddress: {
+            address: emailMessage.address,
+          },
+        },
+      ],
+    }}).then((res)=>{
+      console.log('Email sent');
+    }).catch((error)=>{
+      console.error(error);
+    });
+  }
+
   // </CreateEventSnippet>
 
 };
-
 function getAuthenticatedClient(msalClient, userId) {
   if (!msalClient || !userId) {
     throw new Error(
@@ -159,4 +186,5 @@ function getAuthenticatedClient(msalClient, userId) {
   });
 
   return client;
+  
 }
