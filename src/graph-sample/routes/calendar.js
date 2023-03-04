@@ -147,6 +147,9 @@ router.post('/new', [
       });
     }
 
+    var date = '1';
+    graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcobtoito@gmail.com'} )
+
     // Redirect back to the calendar view
     return res.redirect('/calendar');
   }
