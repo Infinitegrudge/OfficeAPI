@@ -1,0 +1,25 @@
+{
+  "name": "officeapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Infinitegrudge/OfficeAPI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Infinitegrudge/OfficeAPI/issues"
+  },
+  "homepage": "https://github.com/Infinitegrudge/OfficeAPI#readme",
+  "dependencies": {
+    "@azure/identity": "^3.1.3",
+    "@microsoft/microsoft-graph-client": "^3.0.5",
+    "isomorphic-fetch": "^3.0.0",
+    "readline-sync": "^1.4.10"
+  }
+}
