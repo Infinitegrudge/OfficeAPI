@@ -207,4 +207,15 @@ function getAuthenticatedClient(msalClient, userId) {
 
   return client;
   
+};
+
+async function updateExcel(msalClient, userId, startTime, endTime) {
+  const client = getAuthenticatedClient(msalClient, userId);
+  //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
+
+  const cellData = await client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets/schedule/range(address = '{cell-address'}/values").get()
+
+  const updatedCell = {
+  
+  }
 }
