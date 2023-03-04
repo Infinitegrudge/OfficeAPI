@@ -1,7 +1,18 @@
-const readline = require('readline-sync');
+var express = require('express');
+//import session from 'express-session';
+let app = express();
+const fs = require("fs");
+
+app.use(express.static("./"));
+app.use(express.json());
+app.set('view engine', 'pug');
+
+//const readline = require('readline-sync');
 
 const settings = require('./appSettings');
 const graphHelper = require('./graphHelper');
+
+const PORT = 8000;
 
 async function main() {
   console.log('JavaScript Graph Tutorial');
@@ -11,58 +22,75 @@ async function main() {
   // Initialize Graph
   initializeGraph(settings);
 
-  // Greet the user by name
-  await greetUserAsync();
+//   // Greet the user by name
+//   await greetUserAsync();
 
-  const choices = [
-    'Display access token',
-    'List my inbox',
-    'Show drive',
-    'Make a Graph call'
-  ];
+//   const choices = [
+//     'Display access token',
+//     'List my inbox',
+//     'Show drive',
+//     'Make a Graph call'
+//   ];
 
-  while (choice != -1) {
-    choice = readline.keyInSelect(choices, 'Select an option', { cancel: 'Exit' });
+//   while (choice != -1) {
+//     choice = readline.keyInSelect(choices, 'Select an option', { cancel: 'Exit' });
 
-    switch (choice) {
-      case -1:
-        // Exit
-        console.log('Goodbye...');
-        break;
-      case 0:
-        // Display access token
-        await displayAccessTokenAsync();
-        break;
-      case 1:
-        // List emails from user's inbox
-        await listInboxAsync();
-        break;
-      case 2:
-        // Send an email message
-        await displayDriveAsync();
-        break;
-      case 3:
-        // Run any Graph code
-        await makeGraphCallAsync();
-        break;
-      default:
-        console.log('Invalid choice! Please try again.');
-    }
-  }
+//     switch (choice) {
+//       case -1:
+//         // Exit
+//         console.log('Goodbye...');
+//         break;
+//       case 0:
+//         // Display access token
+//         await displayAccessTokenAsync();
+//         break;
+//       case 1:
+//         // List emails from user's inbox
+//         await listInboxAsync();
+//         break;
+//       case 2:
+//         // Send an email message
+//         await displayDriveAsync();
+//         break;
+//       case 3:
+//         // Run any Graph code
+//         await makeGraphCallAsync();
+//         break;
+//       default:
+//         console.log('Invalid choice! Please try again.');
+//     }
+//   }
 }
 
-main();
+app.get(['/', '/home'], (req, res) => {
+  fs.readFile("../frontend/index.html", function(err, data){
+    if(err){
+      res.status(500);
+      res.end();
+      return;
+    }
+    res.status(200);
+    res.setHeader("Content-Type", "text/html");
+    res.write(data);
+    res.end();
+  });
+});
+
+//main();
+app.get("/login",  (req,res) => {
+        initializeGraph(settings);
+    }
+)
 
 function initializeGraph(settings) {
     graphHelper.initializeGraphForUserAuth(settings, (info) => {
-      // Display the device code message to
-      // the user. This tells them
-      // where to go to sign in and provides the
-      // code to use.
-      console.log(info.message);
+        // Display the device code message to
+        // the user. This tells them
+        // where to go to sign in and provides the
+        // code to use.
+        console.log(info.message);
     });
-  }
-  
+}
   async function greetUserAsync() {
     try {
       const user = await graphHelper.getUserAsync();
@@ -83,6 +111,17 @@ function initializeGraph(settings) {
       console.log(`Error getting user access token: ${err}`);
     }
   }
+
+  app.get("/drive", async (req,res) => {
+    if (req.session.loggedin) { 
+      res.render("html/addWorkshop", {session: req.session});
+    }
+    else {
+      console.log("not authenticated");
+      res.status(401).json({'error': 'not authenticated'});
+    }
+  });
+
   async function displayDriveAsync() {
     try {
       const userDrive = await graphHelper.getDriveAsync();
@@ -116,11 +155,14 @@ function initializeGraph(settings) {
   }
 
 
-  
-  async function sendMailAsync() {
-    // TODO
-  }
-  
-  async function makeGraphCallAsync() {
-    // TODO
-  }
+  const loadData = async () => {
+	
+    };
+  loadData()
+  .then(() => {
+
+    app.listen(PORT);
+    console.log("Listen on port:", PORT);
+
+  })
+  .catch(err => console.log(err));

@@ -30,6 +30,8 @@ function initializeGraphForUserAuth(settings, deviceCodePrompt) {
   _userClient = graph.Client.initWithMiddleware({
     authProvider: authProvider
   });
+
+  return true
 }
 module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
 
@@ -84,5 +86,6 @@ async function getUserTokenAsync() {
     }
   
     return _userClient.api('/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets').get();
+    //return _userClient.api('/me/drive/root/children').get();
   }
   module.exports.getDriveAsync = getDriveAsync;
