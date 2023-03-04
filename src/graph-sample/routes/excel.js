@@ -42,7 +42,7 @@ router.get('/',
           debug: JSON.stringify(err, Object.getOwnPropertyNames(err))
         });
       }
-
+      //console.log(params.events);
       res.render('excel', params);
     }
   }
