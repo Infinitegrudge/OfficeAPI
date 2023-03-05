@@ -95,6 +95,39 @@ module.exports = {
       .top(50)
       .get();
   },
+  updateExcel: async function (msalClient, userId, startTime, hours) {
+    const client = getAuthenticatedClient(msalClient, userId);
+    //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
+    //from time, get day
+
+    const day = parseInt(startTime.slice(8,10))
+  
+    //put day for index
+    const cellData = await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).get();
+    const user = await client.api('/me').get();
+    //for from start to start + hours, set cell data to name, corres index is -7
+    //get user name
+    
+    cellData.values[0][1] = user.displayName;
+    console.log(cellData.values)
+
+    // const updatedCell = [
+    //   ['user name']
+    // ];
+
+    const input = {
+      index: 1,
+      values: cellData.values
+    }
+
+    // const workbookTableRow = {
+    //   index: 1,
+    //   values: ['please']
+    // };
+  
+    return client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
+  
+  },
 
   // </GetCalendarViewSnippet>
   // <CreateEventSnippet>
@@ -117,6 +150,8 @@ module.exports = {
         content: formData.body
       }
     };
+
+    //console.log(formData.start)
 
     // Add attendees if present
     if (formData.attendees) {
@@ -162,31 +197,7 @@ module.exports = {
       console.error(error);
     });
   },
-  updateExcel: async function (msalClient, userId) {
-    const client = getAuthenticatedClient(msalClient, userId);
-    //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
   
-  
-    const cellData = await client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=1)").get();
-    cellData.values[0][1] = 'please'
-    console.log(cellData.values)
-    const updatedCell = [
-      ['user name']
-    ];
-
-    const input = {
-      index: 1,
-      values: cellData.values
-    }
-
-    // const workbookTableRow = {
-    //   index: 1,
-    //   values: ['please']
-    // };
-  
-    return client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=0)").update(input)
-  
-  }
 
   // </CreateEventSnippet>
 };

@@ -53,7 +53,7 @@ router.get('/',
           debug: JSON.stringify(err, Object.getOwnPropertyNames(err))
         });
       }
-      console.log(params);
+      //console.log(params);
       res.render('calendar', params);
     }
   }
@@ -111,6 +111,7 @@ router.post('/new', [
       body: req.body['ev-body']
     };
 
+
     // Check if there are any errors with the form values
     const formErrors = validationResult(req);
     if (!formErrors.isEmpty()) {
@@ -146,7 +147,7 @@ router.post('/new', [
         debug: JSON.stringify(error, Object.getOwnPropertyNames(error))
       });
     }
-
+    graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,5)
     var date = formData.start + ' to ' + formData.end;
     graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
 
