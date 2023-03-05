@@ -32,17 +32,17 @@ router.get('/',
       // Get midnight on the start of the current week in the user's timezone,
       // but in UTC. For example, for Pacific Standard Time, the time value would be
       // 07:00:00Z
-      var weekStart = zonedTimeToUtc(dateFns.startOfWeek(new Date()), timeZoneId.valueOf());
-      var weekEnd = dateFns.addDays(weekStart, 7);
-      console.log(`Start: ${dateFns.formatISO(weekStart)}`);
+      var monthStart = zonedTimeToUtc(dateFns.startOfMonth(new Date()), timeZoneId.valueOf());
+      var monthEnd = dateFns.addDays(monthStart, 31);
+      console.log(`Start: ${dateFns.formatISO(monthStart)}`);
 
       try {
         // Get the events
         const events = await graph.getCalendarView(
           req.app.locals.msalClient,
           req.session.userId,
-          dateFns.formatISO(weekStart),
-          dateFns.formatISO(weekEnd),
+          dateFns.formatISO(monthStart),
+          dateFns.formatISO(monthEnd),
           user.timeZone);
 
         // Assign the events to the view parameters
@@ -53,7 +53,7 @@ router.get('/',
           debug: JSON.stringify(err, Object.getOwnPropertyNames(err))
         });
       }
-
+      console.log(params);
       res.render('calendar', params);
     }
   }
@@ -147,8 +147,8 @@ router.post('/new', [
       });
     }
 
-    var date = '1';
-    graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcobtoito@gmail.com'} )
+    var date = formData.start + ' to ' + formData.end;
+    graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
 
     // Redirect back to the calendar view
     return res.redirect('/calendar');
