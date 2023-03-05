@@ -34,12 +34,12 @@ router.get('/',
         req.app.locals.msalClient,
         req.session.userId);
 
-        console.log(payroll);
+        //console.log(payroll);
           
         const schedule = await graph.getSchedule(
         req.app.locals.msalClient,
         req.session.userId)
-        console.log(schedule);
+        //console.log(schedule);
 
         // const temp = await graph.updateExcel(
         // req.app.locals.msalClient,
