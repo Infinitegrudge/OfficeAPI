@@ -1,0 +1,39 @@
+html
+    head 
+        include ../partials/boot
+    body
+        link(rel="stylesheet" href="/css/calendar.css")
+        div.month
+            ul
+                li(class="prev") &#10094;
+                li(class="next") &#10095;
+                li March
+                    br
+                    span(style="font-size:18px") 2023
+        -const week = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
+        div.container
+            ul.weekdays
+                each day in week
+                    li #{day}
+            
+
+            ul.days
+                -let i=0
+                -let k=0
+                -let currDay=4
+                while k<2
+                    -k=k+1
+                    li
+                while i<31
+                    -i=i+1
+                    li
+                        a(href="#" data-toggle="popover" data-trigger="hover" title=`March ${i}` data-content="You're working LL 9-5 stupid employee things ") 
+                            if i == currDay 
+                                span.active #{i}
+                            else 
+                                span #{i}
+        script.
+            $(document).ready(function(){
+                $('[data-toggle="popover"]').popover();
+            });
+
