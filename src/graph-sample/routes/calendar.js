@@ -56,8 +56,11 @@ router.get('/',
           debug: JSON.stringify(err, Object.getOwnPropertyNames(err))
         });
       }
-      //console.log(params);
-      res.render('calendar', params);
+      const arr = await graph.getSchedule(req.app.locals.msalClient,
+        req.session.userId);
+      params.array = arr;
+      console.log(params);
+      res.render('../views/calendar.pug', {array:arr});
     }
   }
 );
