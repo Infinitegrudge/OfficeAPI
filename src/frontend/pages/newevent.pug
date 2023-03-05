@@ -5,30 +5,27 @@ html
         form
             div.form-group
                 label Date
-                select(class="form-control" name="ev-date")
-                    -let i = 2
-                    option(selected value="1") March 1
+                select(class="form-control" name="ev-date" id="ev-date")
+                    -let i = 1
                     while i < 32
                         option(value=`${i}`) March #{i}
                         -i++
 
             div.form-group
                 label Start time
-                select(class="form-control" name="ev-start")
-                    -let j = 9
-                    option(selected value="8") 8:00
+                select(class="form-control" name="ev-start" id="ev-start")
+                    -let j = 8
                     while j < 21
                         option(value=`${j}`) #{j}:00
                         -j++
 
             div.form-group
                 label End time
-                select(class="form-control" name="ev-end")
-                    -let k = 10
-                    option(selected value="9") 9:00
+                select(class="form-control" name="ev-end" id="ev-end")
+                    -let k = 9
                     while k < 21
                         option(value=`${k}`) #{k}:00
                         -k++
-            button(type="button" id="submit" onclick="submit()") Create
+            button(class="btn btn-primary mr-2" type="button" id="submitBtn" onclick="submit()") Create
             a(class="btn btn-secondary" href="/calendar") Cancel
         script(src="/newevent.js")

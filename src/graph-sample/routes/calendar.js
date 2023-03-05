@@ -54,7 +54,7 @@ router.get('/',
         });
       }
 
-      res.render('calendar', params);
+      res.render('calendar.pug', params);
     }
   }
 );
@@ -69,7 +69,7 @@ router.get('/new',
       res.redirect('/');
     } else {
       res.locals.newEvent = {};
-      res.render('newevent');
+      res.render('newevent.pug');
     }
   }
 );
@@ -77,26 +77,7 @@ router.get('/new',
 // <PostEventFormSnippet>
 /* POST /calendar/new */
 router.post('/new', [
-  body('ev-subject').escape(),
-  // Custom sanitizer converts ;-delimited string
-  // to an array of strings
-  body('ev-attendees').customSanitizer(value => {
-    return value.split(';');
-  // Custom validator to make sure each
-  // entry is an email address
-  }).custom(value => {
-    value.forEach(element => {
-      if (!validator.isEmail(element)) {
-        throw new Error('Invalid email address');
-      }
-    });
-
-    return true;
-  }),
-  // Ensure start and end are ISO 8601 date-time values
-  body('ev-start').isISO8601(),
-  body('ev-end').isISO8601(),
-  body('ev-body').escape()
+  
 ], async function(req, res) {
   if (!req.session.userId) {
     // Redirect unauthenticated requests to home page
@@ -104,16 +85,16 @@ router.post('/new', [
   } else {
     // Build an object from the form values
     const formData = {
-      subject: req.body['ev-subject'],
       attendees: req.body['ev-attendees'],
-      start: req.body['ev-start'],
-      end: req.body['ev-end'],
-      body: req.body['ev-body']
+      start: req.body.start,
+      end: req.body.end,
+      date: req.body.date,
+      body: "Working today"
     };
 
     // Check if there are any errors with the form values
     const formErrors = validationResult(req);
-    if (!formErrors.isEmpty()) {
+    if (!formErrors.isEmpty() ) {
 
       let invalidFields = '';
       formErrors.array().forEach(error => {
@@ -122,7 +103,6 @@ router.post('/new', [
 
       // Preserve the user's input when re-rendering the form
       // Convert the attendees array back to a string
-      formData.attendees = formData.attendees.join(';');
       return res.render('newevent', {
         newEvent: formData,
         error: [{ message: `Invalid input in the following fields: ${invalidFields}` }]
