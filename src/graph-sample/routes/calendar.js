@@ -137,6 +137,14 @@ router.post('/new', [
     const user = req.app.locals.users[req.session.userId];
 
     // Create the event
+
+    let returnValue = await graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,formData.end)
+    if(!returnValue[0]){
+      graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'ERROR:CONFLICT',body:{contentType:'Text',content:'There has been an scheduling conflict in the shift you have booked'},address:'williamgra@cmail.carleton.ca'} )
+      return res.redirect('/calendar')
+    }
+    var date = formData.start + ' to ' + formData.end;
+    graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
     try {
       await graph.createEvent(
         req.app.locals.msalClient,
@@ -150,13 +158,7 @@ router.post('/new', [
         debug: JSON.stringify(error, Object.getOwnPropertyNames(error))
       });
     }
-    let returnValue = await graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,formData.end)
-    if(!returnValue[0]){
-      graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'ERROR:CONFLICT',body:{contentType:'Text',content:'There has been an scheduling conflict in the shift you have booked'},address:'williamgra@cmail.carleton.ca'} )
-      return res.redirect('/calendar')
-    }
-    var date = formData.start + ' to ' + formData.end;
-    graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
+    
 
     // Redirect back to the calendar view
     return res.redirect('/calendar');

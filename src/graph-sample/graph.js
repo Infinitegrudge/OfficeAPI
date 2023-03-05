@@ -219,7 +219,11 @@ module.exports = {
     //emailMessage:{subject:string,body:{contentType:string,content:string},address:string}
     
     const client = getAuthenticatedClient(msalClient, userId);
-
+    const addy = await client.api('/me').select(['displayName', 'mail', 'userPrincipalName']).get();
+    console.log("FHUDHIUDHFLHDHLDHF")
+    const mail = addy.mail ?? addy.userPrincipalName 
+    console.log(mail)
+    
     return client.api('/me/sendMail').post({message:{
       subject:emailMessage.subject,
       body:{
@@ -230,7 +234,7 @@ module.exports = {
       toRecipients: [
         {
           emailAddress: {
-            address: emailMessage.address,
+            address: mail,
           },
         },
       ],
