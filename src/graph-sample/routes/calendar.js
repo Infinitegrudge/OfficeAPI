@@ -8,6 +8,7 @@ const zonedTimeToUtc = require('date-fns-tz/zonedTimeToUtc');
 const iana = require('windows-iana');
 const { body, validationResult } = require('express-validator');
 const validator = require('validator');
+const { sendMail } = require('../graph.js');
 
 /* GET /calendar */
 // <GetRouteSnippet>
@@ -44,6 +45,8 @@ router.get('/',
           dateFns.formatISO(monthStart),
           dateFns.formatISO(monthEnd),
           user.timeZone);
+
+        console.log(events)
 
         // Assign the events to the view parameters
         params.events = events.value;
@@ -147,7 +150,11 @@ router.post('/new', [
         debug: JSON.stringify(error, Object.getOwnPropertyNames(error))
       });
     }
-    graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,formData.end)
+    let returnValue = await graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,formData.end)
+    if(!returnValue[0]){
+      graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'ERROR:CONFLICT',body:{contentType:'Text',content:'There has been an scheduling conflict in the shift you have booked'},address:'williamgra@cmail.carleton.ca'} )
+      return res.redirect('/calendar')
+    }
     var date = formData.start + ' to ' + formData.end;
     graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
 

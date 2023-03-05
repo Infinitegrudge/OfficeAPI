@@ -38,7 +38,7 @@ module.exports = {
   getSchedule: async function(msalClient, userId) {
     const client = getAuthenticatedClient(msalClient, userId);
 
-    return client
+    const all = await client
       .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/usedRange").select('values')
       // Add Prefer header to get back times in user's timezone
       // .header('Prefer', `outlook.timezone="${timeZone}"`)
@@ -53,6 +53,38 @@ module.exports = {
       // .orderby('start/dateTime')
       // Get at most 50 results
       .get();
+
+    //console.log(shifts)
+
+    let returnArray = [];
+
+    const shifts = all.values;
+
+    for (let i = 1; i < shifts.length; i++){
+      let currArray = []
+      let prev = shifts[i][1]
+      let start = 8;
+      let stop = 8;
+      for (let j = 1; j < shifts[i].length; j++){
+        if (prev != shifts[i][j]){
+          stop = j+7
+          if (prev != '') {
+            currArray.push(prev + " works from " + start + " to " + stop);
+          }
+          start = j+7
+        }
+        
+        prev = shifts[i][j]
+      }
+      if (prev != '') {
+        currArray.push(prev + " works from " + start + " to " + stop);
+      }
+      returnArray.push(currArray)
+    }
+    console.log(returnArray);
+    return returnArray
+
+
   },
   getDrive: async function(msalClient, userId) {
     const client = getAuthenticatedClient(msalClient, userId);
@@ -113,8 +145,10 @@ module.exports = {
     //for from start to start + hours, set cell data to name, corres index is -7
     //get user name
     
-    let lastestWorked = 21
     for (let i = startHour-7; i < stopHour-7; i++){
+      if (cellData.values[0][i] != ''){
+        return [false, cellData.values[0][i]]
+      }
       cellData.values[0][i] = user.displayName;
       console.log(cellData.values)
     }
@@ -133,9 +167,9 @@ module.exports = {
     //   index: 1,
     //   values: ['please']
     // };
-  
-    return client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
-  
+    await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
+    //return client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
+    return true;
   },
 
   // </GetCalendarViewSnippet>
@@ -210,6 +244,7 @@ module.exports = {
 
   // </CreateEventSnippet>
 };
+
 function getAuthenticatedClient(msalClient, userId) {
   if (!msalClient || !userId) {
     throw new Error(
