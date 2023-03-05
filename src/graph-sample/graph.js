@@ -95,12 +95,17 @@ module.exports = {
       .top(50)
       .get();
   },
-  updateExcel: async function (msalClient, userId, startTime, hours) {
+  updateExcel: async function (msalClient, userId, startTime, stopTime) {
     const client = getAuthenticatedClient(msalClient, userId);
     //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
     //from time, get day
 
     const day = parseInt(startTime.slice(8,10))
+
+    const startHour = parseInt(startTime.slice(11,13))
+    const stopHour = parseInt(stopTime.slice(11, 13))
+    
+    
   
     //put day for index
     const cellData = await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).get();
@@ -108,8 +113,12 @@ module.exports = {
     //for from start to start + hours, set cell data to name, corres index is -7
     //get user name
     
-    cellData.values[0][1] = user.displayName;
-    console.log(cellData.values)
+    let lastestWorked = 21
+    for (let i = startHour-7; i < stopHour-7; i++){
+      cellData.values[0][i] = user.displayName;
+      console.log(cellData.values)
+    }
+    
 
     // const updatedCell = [
     //   ['user name']

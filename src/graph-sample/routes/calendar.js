@@ -147,7 +147,7 @@ router.post('/new', [
         debug: JSON.stringify(error, Object.getOwnPropertyNames(error))
       });
     }
-    graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,5)
+    graph.updateExcel(req.app.locals.msalClient, req.session.userId, formData.start,formData.end)
     var date = formData.start + ' to ' + formData.end;
     graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
 
