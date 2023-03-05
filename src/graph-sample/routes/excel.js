@@ -41,10 +41,10 @@ router.get('/',
         req.session.userId)
         console.log(schedule);
 
-        const temp = await graph.updateExcel(
-        req.app.locals.msalClient,
-        req.session.userId);
-        console.log(temp);
+        // const temp = await graph.updateExcel(
+        // req.app.locals.msalClient,
+        // req.session.userId);
+        // console.log(temp);
         // (temp.value).forEach((x) => {
         //   console.log((x.values)[0]);
         // })
