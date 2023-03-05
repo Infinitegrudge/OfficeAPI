@@ -31,13 +31,28 @@ router.get('/',
       try {
         // Get the events
         const payroll = await graph.getPayroll(
-          req.app.locals.msalClient,
-          req.session.userId);
+        req.app.locals.msalClient,
+        req.session.userId);
 
         console.log(payroll);
-          const schedule = await graph.getSchedule(req.app.locals.msalClient,
-            req.session.userId)
-            console.log(schedule);
+          
+        const schedule = await graph.getSchedule(
+        req.app.locals.msalClient,
+        req.session.userId)
+        console.log(schedule);
+
+        const temp = await graph.updateExcel(
+        req.app.locals.msalClient,
+        req.session.userId);
+        console.log(temp);
+        // (temp.value).forEach((x) => {
+        //   console.log((x.values)[0]);
+        // })
+        // await graph.updateExcel(
+        //   req.app.locals.msalClient,
+        //   req.session.userId);
+
+          
         // Assign the events to the view parameters
         //params.events = files.value;
       } catch (err) {

@@ -19,7 +19,7 @@ module.exports = {
 
     return client
 
-      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B1BB9E4E1-AEC1-43F8-9CAE-A949F9B28991%7D%27)/usedRange")
+      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B1BB9E4E1-AEC1-43F8-9CAE-A949F9B28991%7D%27)/usedRange").select('values')
 
       // Add Prefer header to get back times in user's timezone
       // .header('Prefer', `outlook.timezone="${timeZone}"`)
@@ -39,7 +39,7 @@ module.exports = {
     const client = getAuthenticatedClient(msalClient, userId);
 
     return client
-      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/usedRange")
+      .api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/usedRange").select('values')
       // Add Prefer header to get back times in user's timezone
       // .header('Prefer', `outlook.timezone="${timeZone}"`)
       // // Add the begin and end of the calendar window
@@ -161,10 +161,34 @@ module.exports = {
     }).catch((error)=>{
       console.error(error);
     });
+  },
+  updateExcel: async function (msalClient, userId) {
+    const client = getAuthenticatedClient(msalClient, userId);
+    //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
+  
+  
+    const cellData = await client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=1)").get();
+    cellData.values[0][1] = 'please'
+    console.log(cellData.values)
+    const updatedCell = [
+      ['user name']
+    ];
+
+    const input = {
+      index: 1,
+      values: cellData.values
+    }
+
+    // const workbookTableRow = {
+    //   index: 1,
+    //   values: ['please']
+    // };
+  
+    return client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=0)").update(input)
+  
   }
 
   // </CreateEventSnippet>
-
 };
 function getAuthenticatedClient(msalClient, userId) {
   if (!msalClient || !userId) {
@@ -206,16 +230,7 @@ function getAuthenticatedClient(msalClient, userId) {
   });
 
   return client;
+
   
 };
 
-async function updateExcel(msalClient, userId, startTime, endTime) {
-  const client = getAuthenticatedClient(msalClient, userId);
-  //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
-
-  const cellData = await client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets/schedule/range(address = '{cell-address'}/values").get()
-
-  const updatedCell = {
-  
-  }
-}
