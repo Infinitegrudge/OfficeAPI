@@ -46,7 +46,7 @@ router.get('/',
           dateFns.formatISO(monthEnd),
           user.timeZone);
 
-        console.log(events)
+        //console.log(events)
 
         // Assign the events to the view parameters
         params.events = events.value;
@@ -143,6 +143,7 @@ router.post('/new', [
       graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'ERROR:CONFLICT',body:{contentType:'Text',content:'There has been an scheduling conflict in the shift you have booked'},address:'williamgra@cmail.carleton.ca'} )
       return res.redirect('/calendar')
     }
+
     var date = formData.start + ' to ' + formData.end;
     graph.sendMail(req.app.locals.msalClient, req.session.userId,{subject:'SHIFT BOOKED',body:{contentType:'Text',content:'You have a shift booked on '+date},address:'marcotoito@cmail.carleton.ca'} )
     try {
@@ -159,7 +160,7 @@ router.post('/new', [
       });
     }
     
-
+    await graph.updatePayroll(req.app.locals.msalClient, req.session.userId, user.displayName, formData.start, formData.end)
     // Redirect back to the calendar view
     return res.redirect('/calendar');
   }

@@ -81,7 +81,7 @@ module.exports = {
       }
       returnArray.push(currArray)
     }
-    console.log(returnArray);
+    //console.log(returnArray);
     return returnArray
 
 
@@ -128,6 +128,7 @@ module.exports = {
       .get();
   },
   updateExcel: async function (msalClient, userId, startTime, stopTime) {
+    console.log("IN UPDATE EXCELLLLLLLLLLLLLLLLLLLLLLLLLLLL")
     const client = getAuthenticatedClient(msalClient, userId);
     //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
     //from time, get day
@@ -145,6 +146,85 @@ module.exports = {
     //for from start to start + hours, set cell data to name, corres index is -7
     //get user name
     
+    for (let i = startHour-7; i < stopHour-7; i++){
+      if (cellData.values[0][i] != ''){
+        return [false, cellData.values[0][i]]
+      }
+      cellData.values[0][i] = user.displayName;
+      //console.log(cellData.values)
+    }
+    
+
+    // const updatedCell = [
+    //   ['user name']
+    // ];
+
+    const input = {
+      //index: 1,
+      values: cellData.values
+    }
+
+    // const workbookTableRow = {
+    //   index: 1,
+    //   values: ['please']
+    // };
+    await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
+    //return client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
+    return [true, true];
+  },
+
+  updatePayroll: async function (msalClient, userId, name, startTime, endTime) {
+    const client = getAuthenticatedClient(msalClient, userId);
+    //client.api("/me/drive/items/132EB664B78CC9B1!127/workbook/worksheets(%27%7B00000000-0001-0000-0000-000000000000%7D%27)/")
+    //from time, get day
+  
+    //put day for index
+    const names = await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table2/columns/itemAt(index=0)`).get();
+    //const user = await client.api('/me').get();
+    //for from start to start + hours, set cell data to name, corres index is -7
+    //get user name
+    
+    let nameRow = null;
+    console.log(name)
+
+    for (let i = 0; i < names.values.length; i++){
+      //console.log(names.values[i][0])
+      if (name === names.values[i][0]){
+        nameRow = i;
+      }
+    }
+
+    if (nameRow == null){
+      //no name in this payroll
+      return
+    }
+
+    const payInfo =  await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table2/rows/itemAt(index=${nameRow-1})`).get()
+    console.log(payInfo)
+
+    const startHour = parseInt(startTime.slice(11,13))
+    const stopHour = parseInt(endTime.slice(11, 13))
+    const extraHours = stopHour-startHour
+
+    let totalHours = parseInt(payInfo.values[0][2]) + extraHours
+    payInfo.values[0][2] = totalHours
+    console.log(totalHours)
+
+
+    payInfo.values[0][3] = totalHours*payInfo.values[0][1]
+
+    const updatedValue = {
+      values: payInfo.values
+    }
+
+    await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table2/rows/itemAt(index=${nameRow-1})`).update(updatedValue)
+
+    
+
+    // await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${nameRow})`).update(updatedValue)
+
+
+    /*
     for (let i = startHour-7; i < stopHour-7; i++){
       if (cellData.values[0][i] != ''){
         return [false, cellData.values[0][i]]
@@ -170,6 +250,7 @@ module.exports = {
     await client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
     //return client.api(`/me/drive/items/132EB664B78CC9B1!127/workbook/tables/Table1/rows/itemAt(index=${day-1})`).update(input)
     return true;
+    */
   },
 
   // </GetCalendarViewSnippet>
@@ -220,9 +301,9 @@ module.exports = {
     
     const client = getAuthenticatedClient(msalClient, userId);
     const addy = await client.api('/me').select(['displayName', 'mail', 'userPrincipalName']).get();
-    console.log("FHUDHIUDHFLHDHLDHF")
+    //console.log("FHUDHIUDHFLHDHLDHF")
     const mail = addy.mail ?? addy.userPrincipalName 
-    console.log(mail)
+    //console.log(mail)
     
     return client.api('/me/sendMail').post({message:{
       subject:emailMessage.subject,
