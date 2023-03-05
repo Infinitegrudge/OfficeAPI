@@ -1,0 +1,45 @@
+html
+    head 
+        include ./boot
+    body
+        link(rel="stylesheet" href="/stylesheets/calendar.css")
+        div.month
+            ul
+                li(class="prev") &#10094;
+                li(class="next") &#10095;
+                li March
+                    br
+                    span(style="font-size:18px") 2023
+        -const week = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
+        div.container
+            ul.weekdays
+                each day in week
+                    li #{day}
+            
+        div.container
+            ul.days
+                -let k=0
+                -let i=0
+                -let currDay=5
+                while k<2
+                    -k=k+1
+                    li
+                each arr in array
+                    -i++
+                    -let info = ""
+                    each str in arr
+                        -info += " "+ str
+                    li
+                        a(href="#" data-toggle="popover" data-trigger="hover" title=`March ${i}` data-content=`${info}`) 
+                            if i == currDay 
+                                span.active #{i}
+                            else 
+                                span #{i}
+        br
+        div.container
+            a(href="/calendar/new" class="btn") New event
+        script.
+            $(document).ready(function(){
+                $('[data-toggle="popover"]').popover();
+            });
+
